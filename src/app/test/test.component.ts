@@ -8,14 +8,27 @@ import { Mix } from "../mix";
     styleUrls:['./test.component.css']
 })
 export class TestComponent implements OnInit {
-    text:string = 'mytestapp';
-    result:number = 0;
-    inputA:number = 0;
+    inputContent:string = '';
+    outputContent:string = '';
+    display:string = 'none';
+    configContent:string = 'none';
     ngOnInit(): void {
         
     }
     public clickbtn(){
         btn();
+    }
+
+    public clickChoose(){
+       let result =  ClickChoose();
+       this.inputContent = result['inputDir'];
+       this.outputContent = result['outputDir'];
+       this.display = "";
+       this.configContent = "";
+    }
+
+    public clickCreateConfig(){
+        clickCreateConfig();
     }
 
     

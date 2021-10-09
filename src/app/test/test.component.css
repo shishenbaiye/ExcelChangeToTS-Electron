@@ -1,5 +1,27 @@
 .index{
     display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+    margin: 2rem;
+}
+
+Button{
+    width: 10rem;
+    height: 3rem;
+    font-size:1rem;
+    display: flex;
     flex-direction: row;
-    margin-left: 2rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.ffooter{
+    width: 100%;
+    position: absolute;
+    top: 40rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
