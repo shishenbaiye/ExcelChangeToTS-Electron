@@ -1,19 +1,17 @@
 const nodeXlsx = require('node-xlsx');
+const ipc = require('electron').ipcRenderer;
 const fs = require('fs');
 const path = require('path');
 /**导入路径 */
-const inputDir = "D:\\java\\Frontend\\Electron\\ng\\myapp\\electron\\excel";
+var inputDir = "";
 /**导出路径 */
-const outputDir = "D:\\java\\Frontend\\Electron\\ng\\myapp\\electron\\excel";
+var outputDir = "";
 
 var that = this;
-
+ 
 var btn = function(){
     var excelArray = [];
     var ArrayJSON = [];
-    let path2 = path.join("D:\\java\\Frontend\\Electron\\ng\\myapp\\electron\\excel\\EnergyRobot.xlsx");
-    let excelString = nodeXlsx.parse(path2);
-    let table1 = excelString[0].data;
     /**文件名数组 */
     let filsArray = fs.readdirSync(inputDir);
     /**属性数组 */
@@ -47,11 +45,23 @@ var btn = function(){
         }
     })
     excelArray.forEach((obj,index)=>{
+        let object = "";
+        let method = "";
+        let describe = "";
         for(let i = 0;i<obj[0].length;i++){
-            objectArray.push(`"${obj[0][i]}"`);
-            methodArray.push(obj[1][i]);
-            describeArray.push(obj[2][i]);
+            if(i == obj[0].length - 1){
+                object += `"${obj[0][i]}"`
+                method += `${obj[1][i]}`
+                describe += `${obj[2][i]}`
+            }else{
+                object += `"${obj[0][i]}",`
+                method += `${obj[1][i]},`
+                describe += `${obj[2][i]},`
+            }
         }
+        objectArray.push(object);
+        methodArray.push(method);
+        describeArray.push(describe);
     })
     /**拼接json */
     excelArray.forEach((excel,index)=>{
@@ -82,26 +92,24 @@ var btn = function(){
             
         }
         // json += "]"; 
-        console.log(`${json}`);
         ArrayJSON.push(json);
     });
-    /**TS文件内容处理 */
-    
-
     filsArray.forEach((fileName,index)=> {
         if(fileName != null){
             if(fileName.match(`.xlsx`)){
-                let content = that.CreateFileContent(ArrayJSON[index],fileName.replace(".xlsx",""),objectArray,describeArray,methodArray);
+                // ts内容处理
+                let content = that.CreateFileContent(ArrayJSON[index],fileName.replace(".xlsx",""),objectArray[index],describeArray[index],methodArray[index]);
                 fs.writeFileSync(`${outputDir}\\${fileName.replace(".xlsx",".ts")}`,content);
-                
+                content = null;
             }else{
                 fs.writeFileSync(`${outputDir}\\${fileName.replace(".xls",".ts")}`,`const ${fileName.replace(".xlsx","")}Json = ${ArrayJSON[index]}`);
             } 
         }    
     });
+    window.alert("转换完成!感谢使用!")
 }
 /**
- * 
+ * 模板内容处理
  * @param {JSON数组} json 
  * @param {文件名} filename 
  * @param {属性对象数组} objectArray 
@@ -110,17 +118,44 @@ var btn = function(){
  * @returns content
  */
 var CreateFileContent = function(json,filename,objectArray,describeArray,methodArray){
-    var temp = "const  JsonDataMap = [\n//JsonDataMap\n]\nconst  ElementMap = [ \n //ElementMap ]\ninterface $ExcelName$Element {\n//attribute\n}\nexport class $ExcelName$ {\n//根据id获取一个元素\npublic static GetElement(id: number): $ExcelName$Element {\nreturn $ExcelName$.FindElement(\"ID\", id);\n}\n//根据key,value查找一个元素\npublic static FindElement(key:string, value:any): $ExcelName$Element{\nif( ElementMap[key] == null){\n ElementMap[key] = $ExcelName$.FindDataFromJson(key, value);\n}\nreturn  ElementMap[key];\n}\n//获取所有元素\npublic static GetAllElement():Array<$ExcelName$Element>{\nreturn JsonDataMap;\n}\n\nprivate static FindDataFromJson(key:string, value:any):any{\nfor(let i = 0; i < JsonDataMap.length; i++){\nif (JsonDataMap[i][key] == value){\nreturn JsonDataMap[i];\n}\n}\nreturn null;\n}\n}"
+    var temp = "const ElementArr:Array<$ExcelName$Element> =[ //JsonDataMap];\nconst ElementMap:Map<number, $ExcelName$Element>  = new Map<number, $ExcelName$Element>();\nElementArr.forEach(item =>{ElementMap.set(item.ID,item)})\n\ninterface $ExcelName$Element {\n//ElementAttribute\n}\nexport class $ExcelName$ {\n\t/**根据id获取一个元素*/\n\tpublic static GetDataById(id: number): $ExcelName$Element {\n\t\treturn ElementMap.get(id);\n\t}\n\t/**根据key,value查找一个元素*/\n\tpublic static FindElement(key:string, value:any): $ExcelName$Element{\n\t\tElementMap.forEach(element => {\n\t\t\tif(element[key] == value){\n\t\t\t\treturn element[key];\n\t\t\t}\n\t\t});\n\t\treturn null;\n\t}\n\t/**获取所有元素*/\n\tpublic static GetAllElement():Array<$ExcelName$Element>{\n\t\tif(ElementArr == null){\n\t\t\tElementMap.forEach(element => {\n\t\t\t\tElementArr.push(element);\n\t\t\t});\n\t\t}\n\t\treturn ElementArr;\n\t}\n}"
     var method = "";
+    objectArray = objectArray.split(',');
+    describeArray = describeArray.split(',');
+    methodArray = methodArray.split(',');
     objectArray.forEach((item,index)=>{
         method += `/**${describeArray[index]}*/\n${item.replace(/"/g,"")}:${methodArray[index]}\n`
     })
+    
+
     let req = /\$ExcelName\$/g;
     temp = temp.replace("//JsonDataMap",`${json}`);
-    temp = temp.replace("//ElementMap",`${objectArray}`);
-    temp = temp.replace("//attribute",`${method}`);
+    temp = temp.replace("//ElementAttribute",`${method}`);
     temp = temp.replace(req,`${filename}`);
     return temp;
+}
+
+/**读取配置文件 */
+var ClickChoose = function(){
+    try {
+        let content = JSON.parse(fs.readFileSync("C:\\Users\\Public\\ExcelConfig\\Config.json",'utf8'));
+        inputDir = content['inputDir'];
+        outputDir = content['outputDir'];
+        return content
+    } catch (error) {
+        window.alert(error);
+    } 
+}
+
+var clickCreateConfig = function(){
+    try {
+        var content = "\n这是一个示例，请修改成对应的目录。\n\n注意！\"\\\" 一定要用双斜杠!\n\n{\n\t\"inputDir\":\"C:\\\\Users\\\\Admin\\\\Desktop\\\\ConfigTable\",\n\t\"outputDir\":\"C:\\\\Users\\\\Admin\\\\Desktop\\\\ts\"\n}"
+        fs.mkdirSync('C:\\Users\\Public\\ExcelConfig');
+        fs.writeFileSync('C:\\Users\\Public\\ExcelConfig\\Config.json',content);
+        window.alert("配置文件创建成功!\n位置在C:\\Users\\Public\\ExcelConfig\n请修改配置文件后再转换！")
+    } catch (error) {
+        window.alert(error);
+    }
 }
 
 

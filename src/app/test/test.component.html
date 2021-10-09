@@ -1,7 +1,23 @@
 
-<h1>Excel change to TypeScript</h1>
-<h2>1.First please choose the excel files path:</h2>
-<!-- <input [(ngModel)] = 'inputA' type="number" #inputValue/> -->
-<div class="index">Edit root directory config file with Config.json</div>
 
-<button (click)='clickbtn()'>change</button>
+<div class="index" >
+    <h1>Excel change to TypeScript</h1>
+    <p>Author：zebin.ge</p>
+    <!-- <h2>生成配置文件Config.json在C:\Users\Public\ExcelConfig</h2> -->
+    <h3>生成配置文件请按下方按钮，如果已经有配置文件请直接读取</h3>
+    <button (click)='clickCreateConfig()' > 生 <p style="margin: 0 0.5rem;"></p> 成 </button>
+    <!-- <input [(ngModel)] = 'inputA' type="number" #inputValue/> -->
+    <h3>读取配置文件：Config.json</h3>
+    
+    <button (click)='clickChoose()' > 读 <p style="margin: 0 0.5rem;"></p> 取 </button>
+    
+    <h4  style ="display:{{configContent}}">输入的文件夹：{{inputContent}}</h4>
+    <h4  style ="display:{{configContent}}">输出的文件夹：{{outputContent}}</h4>
+    
+    <button class="Button" (click)='clickbtn()' style ="display:{{display}}">转换</button>
+</div>
+<div class="ffooter">
+    <h3>如果觉得好用，麻烦给一个star吧！感谢各位！</h3>
+    <h3>有什么意见或者建议或者BUG请联系我！zebin.ge@appshahe.com</h3>
+    <h4><img src=""/>github:<a href="https://github.com/shishenbaiye/ExcelChangeToTS-Electron">https://github.com/shishenbaiye/ExcelChangeToTS-Electron</a></h4>
+</div>
