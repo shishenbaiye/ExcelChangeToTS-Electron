@@ -10,6 +10,8 @@ var outputDir = "";
 var that = this;
  
 var btn = function(){
+    ClickChoose();
+    console.log(`生成多个文件`);
     var excelArray = [];
     var ArrayJSON = [];
     /**文件名数组 */
@@ -20,6 +22,7 @@ var btn = function(){
     let methodArray = [];
     /**属性描述 */
     let describeArray = [];
+    let iisreturn = false
     // 回调的方法，但是这种方法会出现回调坑，Sync只能同步返回的内容，但是回调并不会
     // fs.readdirSync("D:\\java\\Frontend\\Electron\\ng\\myapp\\electron\\excel",(err,files)=>{
     //     if (err) 
@@ -44,6 +47,16 @@ var btn = function(){
             console.log(file+" is not a Excel file!");
         }
     })
+    console.log(`asdasda${filsArray}`);
+    excelArray.forEach((excel,index)=>{
+        if(excel[1][0] == "ID"){
+            window.alert(`多文件请用老版模板，新版模板的多文件导出敬请期待！`);
+            iisreturn = true
+        }
+    })
+    if(iisreturn){
+        return
+    }
     excelArray.forEach((obj,index)=>{
         let object = "";
         let method = "";
@@ -71,7 +84,11 @@ var btn = function(){
             json += "{";
             for(let j = 0; j<excel[0].length;j++){
                 if(excel[i][j] == null)
-                        excel[i][j] = null;
+                        if(excel[i][0] == null){
+                            continue;
+                        }else{
+                            excel[i][j] = null;
+                        }  
                 if(j == excel[0].length-1){
                     if(excel[1][j] == "string")
                         json += `\"${excel[0][j]}\":\"${excel[i][j]}\"`;
@@ -98,9 +115,14 @@ var btn = function(){
         if(fileName != null){
             if(fileName.match(`.xlsx`)){
                 // ts内容处理
-                let content = that.CreateFileContent(ArrayJSON[index],fileName.replace(".xlsx",""),objectArray[index],describeArray[index],methodArray[index]);
-                fs.writeFileSync(`${outputDir}\\${fileName.replace(".xlsx",".ts")}`,content);
-                content = null;
+                try{
+                    console.log(`${fileName}`);
+                    let content = that.CreateFileContent(ArrayJSON[index],fileName.replace(".xlsx",""),objectArray[index],describeArray[index],methodArray[index]);
+                    fs.writeFileSync(`${outputDir}\\${fileName.replace(".xlsx",".ts")}`,content);
+                    content = null;
+                }catch{
+
+                }
             }else{
                 fs.writeFileSync(`${outputDir}\\${fileName.replace(".xls",".ts")}`,`const ${fileName.replace(".xlsx","")}Json = ${ArrayJSON[index]}`);
             } 
@@ -118,7 +140,7 @@ var btn = function(){
  * @returns content
  */
 var CreateFileContent = function(json,filename,objectArray,describeArray,methodArray){
-    var temp = "const ElementArr:Array<$ExcelName$Element> =[ //JsonDataMap];\nconst ElementMap:Map<number, $ExcelName$Element>  = new Map<number, $ExcelName$Element>();\nElementArr.forEach(item =>{ElementMap.set(item.ID,item)})\n\ninterface $ExcelName$Element {\n//ElementAttribute\n}\nexport class $ExcelName$ {\n\t/**根据id获取一个元素*/\n\tpublic static GetDataById(id: number): $ExcelName$Element {\n\t\treturn ElementMap.get(id);\n\t}\n\t/**根据key,value查找一个元素*/\n\tpublic static FindElement(key:string, value:any): $ExcelName$Element{\n\t\tElementMap.forEach(element => {\n\t\t\tif(element[key] == value){\n\t\t\t\treturn element[key];\n\t\t\t}\n\t\t});\n\t\treturn null;\n\t}\n\t/**获取所有元素*/\n\tpublic static GetAllElement():Array<$ExcelName$Element>{\n\t\tif(ElementArr == null){\n\t\t\tElementMap.forEach(element => {\n\t\t\t\tElementArr.push(element);\n\t\t\t});\n\t\t}\n\t\treturn ElementArr;\n\t}\n}"
+    var temp = "const ElementArr:Array<$ExcelName$Element> =[ //JsonDataMap];\nconst ElementMap:Map<number, $ExcelName$Element>  = new Map<number, $ExcelName$Element>();\nElementArr.forEach(item =>{ElementMap.set(item.ID,item)})\n\nexport interface $ExcelName$Element {\n//ElementAttribute\n}\nexport class $ExcelName$ {\n\t/**根据id获取一个元素*/\n\tpublic static GetDataById(id: number): $ExcelName$Element {\n\t\treturn ElementMap.get(id);\n\t}\n\t/**根据key,value查找一个元素*/\n\tpublic static FindElement(key:string, value:any): $ExcelName$Element{\n\t\tlet id: number;\n\t\tElementMap.forEach(element => {\n\t\t\tif(element[key] == value){\n\t\t\t\tid = element[\"ID\"];\n\t\t\t}\n\t\t});\n\t\treturn ElementMap.get(id);\n\t}\n\t/**获取所有元素*/\n\tpublic static GetAllElement():Array<$ExcelName$Element>{\n\t\tif(ElementArr == null){\n\t\t\tElementMap.forEach(element => {\n\t\t\t\tElementArr.push(element);\n\t\t\t});\n\t\t}\n\t\treturn ElementArr;\n\t}\n}"
     var method = "";
     objectArray = objectArray.split(',');
     describeArray = describeArray.split(',');
@@ -138,25 +160,48 @@ var CreateFileContent = function(json,filename,objectArray,describeArray,methodA
 /**读取配置文件 */
 var ClickChoose = function(){
     try {
-        let content = JSON.parse(fs.readFileSync("C:\\Users\\Public\\ExcelConfig\\Config.json",'utf8'));
+        let Path =  path.join(__dirname, '../../../../');
+        let content = JSON.parse(fs.readFileSync(`${Path}Config\\Config.json`,'utf8', (err)=>{
+            if(err){
+                console.log(`出错了`);
+                window.alert(err);
+            }
+        }));
         inputDir = content['inputDir'];
         outputDir = content['outputDir'];
-        return content
     } catch (error) {
-        window.alert(error);
+        window.alert(`请先按要求修改配置文件后再转换!`)
     } 
 }
-
+/**创建配置文件 */
 var clickCreateConfig = function(){
     try {
-        var content = "\n这是一个示例，请修改成对应的目录。\n\n注意！\"\\\" 一定要用双斜杠!\n\n{\n\t\"inputDir\":\"C:\\\\Users\\\\Admin\\\\Desktop\\\\ConfigTable\",\n\t\"outputDir\":\"C:\\\\Users\\\\Admin\\\\Desktop\\\\ts\"\n}"
-        fs.mkdirSync('C:\\Users\\Public\\ExcelConfig');
-        fs.writeFileSync('C:\\Users\\Public\\ExcelConfig\\Config.json',content);
-        window.alert("配置文件创建成功!\n位置在C:\\Users\\Public\\ExcelConfig\n请修改配置文件后再转换！")
+        var content = "\n这是一个示例，请修改成对应的目录,修改完后删除所有文字内容。\n\n注意！\"\\\" 一定要用双斜杠!\n\n{\n\t\"inputDir\":\"C:\\\\Users\\\\Admin\\\\Desktop\\\\ConfigTable\",\n\t\"outputDir\":\"C:\\\\Users\\\\Admin\\\\Desktop\\\\ts\"\n}"
+        let Path =  path.join(__dirname, '../../../../');
+        fs.mkdirSync(`${Path}Config`);
+        fs.writeFileSync(`${Path}Config\\Config.json`,content);
+        window.alert(`配置文件创建成功!\n位置在${Path}Config\n请修改配置文件后再转换！`)
+        return `${Path}Config`
     } catch (error) {
-        window.alert(error);
+        let Path =  path.join(__dirname, '../../../../');
+        return `${Path}Config`
     }
 }
+
+var Opendir = function(dir){
+    require('child_process').exec(`start "" "${dir}"`);
+}
+
+
+var Close = function(){
+    ipc.send("close-win");
+}
+
+var Taskbar = function(){
+    ipc.send("hide-win");
+}
+
+
 
 
 

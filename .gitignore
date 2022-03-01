@@ -4,6 +4,8 @@
 /dist
 /tmp
 /out-tsc
+/build
+/out
 # Only exists if Bazel was run
 /bazel-out
 
@@ -39,7 +41,7 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
-
+/electron/excel
 # System Files
 .DS_Store
 Thumbs.db

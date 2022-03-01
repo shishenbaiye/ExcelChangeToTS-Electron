@@ -1,6 +1,6 @@
 {
   "name": "ExcelToTypeScript",
-  "version": "0.1.0",
+  "version": "0.6.1",
   "main": "main.js",
   "author": "zebin.ge",
   "description": "a tool for excel change to typescript",
@@ -13,23 +13,26 @@
     "electron": "ng build && electron .",
     "package": "electron-forge package",
     "make": "ng build && electron-forge make",
-    "ele": "electron ."
+    "ele": "electron .",
+    "dist": "ng build && electron-builder --win --x64"
   },
   "private": true,
   "dependencies": {
     "@angular/animations": "~12.2.0",
+    "@angular/cdk": "^12.2.11",
     "@angular/common": "~12.2.0",
     "@angular/compiler": "~12.2.0",
     "@angular/core": "~12.2.0",
     "@angular/forms": "~12.2.0",
+    "@angular/material": "^12.2.11",
     "@angular/platform-browser": "~12.2.0",
     "@angular/platform-browser-dynamic": "~12.2.0",
     "@angular/router": "~12.2.0",
     "electron-squirrel-startup": "^1.0.0",
+    "node-xlsx": "^0.17.2",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.11.4",
-    "node-xlsx": "^0.17.2"
+    "zone.js": "~0.11.4"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~12.2.8",
@@ -43,6 +46,7 @@
     "@types/jasmine": "~3.8.0",
     "@types/node": "^12.20.27",
     "electron": "^15.1.0",
+    "electron-builder": "^22.14.5",
     "jasmine-core": "~3.8.0",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",
@@ -78,5 +82,24 @@
         }
       ]
     }
-  }
+  },
+  "build": {
+    "appId": "com.electron.ExcelToTypeScript",
+    "win": {
+      "target": ["nsis","zip"]
+    },
+    "directories": {
+      "output": "build"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "./icon.ico",
+      "uninstallerIcon": "./icon.ico",
+      "installerHeaderIcon": "./icon.svg",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  } 
 }

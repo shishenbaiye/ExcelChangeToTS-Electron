@@ -1,7 +1,5 @@
 import { Component,OnInit } from "@angular/core";
 
-import { Mix } from "../mix";
-
 @Component({
     selector:"app-test",
     templateUrl:'./test.component.html',
@@ -9,28 +7,49 @@ import { Mix } from "../mix";
 })
 export class TestComponent implements OnInit {
     inputContent:string = '';
-    outputContent:string = '';
-    display:string = 'none';
     configContent:string = 'none';
+    checkOne:boolean = false;
+    checkTwo:boolean = false;
     ngOnInit(): void {
-        
+        let result = clickCreateConfig();
+        this.inputContent = result;    
     }
     public clickbtn(){
-        btn();
+        if(this.checkOne && this.checkTwo){
+            btnn();
+            btn();
+        }else{
+            if(this.checkOne){
+               btnn(); 
+            }
+            if(this.checkTwo){
+                btn();
+            }
+            if(!this.checkOne && !this.checkTwo){
+                window.alert("请选择生成方式！")
+            }
+        }
     }
 
-    public clickChoose(){
-       let result =  ClickChoose();
-       this.inputContent = result['inputDir'];
-       this.outputContent = result['outputDir'];
-       this.display = "";
-       this.configContent = "";
+    public selection(checkid:string,state:boolean){
+        if(checkid == "one"){
+            this.checkOne = state;
+        }
+        if(checkid == "two"){
+            this.checkTwo = state;
+        }  
     }
 
-    public clickCreateConfig(){
-        clickCreateConfig();
+    public clickClose(){
+        Close();
     }
 
-    
+    public clickRemove(){
+        Taskbar();
+    }
+
+    opendir(){
+        Opendir(this.inputContent);
+    } 
 }
 

@@ -30,10 +30,12 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",
               "src/styles.css"
             ],
             "scripts": [
-              "src/uitls/changeScript.js"
+              "src/uitls/changeScript.js",
+              "src/uitls/changeAll.js"
             ]
           },
           "configurations": {
@@ -99,6 +101,7 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",
               "src/styles.css"
             ],
             "scripts": [
