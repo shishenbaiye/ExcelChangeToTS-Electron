@@ -76,7 +76,7 @@ var btnn = function(){
                 if(item[0]){
                     NewArray.push(item)
                 }else{  
-                    console.log(`当前${index1+1}行为空，忽略`);
+                    
                 }
             }
         })
@@ -210,60 +210,61 @@ var btnn = function(){
         checkreturn = false;
         return
     }
-    /**修改原数组 */
-    excelArray.forEach((excel,indexe)=>{
-        for(let j = 0; j<excel[0].length;j++){
-            if(excel[0][j] == "VECTOR2"){
-                for(let i = Sindex;i<excel.length;i++){
-                    if(!excel[i][j]){
-                        excel[i][j] = ""
-                    }else{
-                        excel[i][j] = excel[i][j].replace(/\|/g,",");
-                        excel[i][j] = "2$"+excel[i][j]+"$2";
-                    }  
+  /**修改原数组 */
+  excelArray.forEach((excel,indexe)=>{
+    for(let j = 0; j<excel[0].length;j++){
+        if(excel[0][j] == "VECTOR2"){
+            for(let i = Sindex;i<excel.length;i++){
+                if(!excel[i][j]){
+                    excel[i][j] = ""
+                }else{
+                    excel[i][j] = excel[i][j].replace(/\|/g,",");
+                    excel[i][j] = "2$"+excel[i][j]+"$2";
+                }  
+            }
+        }
+        if(excel[0][j] == "VECTOR3"){
+            for(let i = Sindex;i<excel.length;i++){
+                if(!excel[i][j]){
+                    excel[i][j] = ""
+                }else{
+                    excel[i][j] = excel[i][j].replace(/\|/g,",");
+                    excel[i][j] = "3$"+excel[i][j]+"$3";
                 }
             }
-            if(excel[0][j] == "VECTOR3"){
-                for(let i = Sindex;i<excel.length;i++){
-                    if(!excel[i][j]){
-                        excel[i][j] = ""
+        }
+        if(excel[0][j] == "VECTOR4"){
+            for(let i = Sindex;i<excel.length;i++){
+                if(!excel[i][j]){
+                    excel[i][j] = ""
+                }else{
+                    excel[i][j] = excel[i][j].replace(/\|/g,",");
+                    excel[i][j] = "4$"+excel[i][j]+"$4";
+                }
+            }
+        }
+        if(excel[0][j] == "BOOLEAN"){
+            for(let i = Sindex;i<excel.length;i++){
+                if(!excel[i][j] && excel[i][j] != 0){
+                    excel[i][j] = 0
+                }else{
+                    if(excel[i][j] == 1){
+                        excel[i][j] = true;
+                    }else if(excel[i][j] == 0){
+                        excel[i][j] = false;
                     }else{
-                        excel[i][j] = excel[i][j].replace(/\|/g,",");
-                        excel[i][j] = "3$"+excel[i][j]+"$3";
+                        window.alert(`文件${filsArray[indexe]}中第${i+1}行${j+1}列布尔值填写有问题，请填写1或0！`);
+                        checkreturn = true
                     }
                 }
             }
-            if(excel[0][j] == "VECTOR4"){
-                for(let i = Sindex;i<excel.length;i++){
-                    if(!excel[i][j]){
-                        excel[i][j] = ""
-                    }else{
-                        excel[i][j] = excel[i][j].replace(/\|/g,",");
-                        excel[i][j] = "4$"+excel[i][j]+"$4";
-                    }
-                }
-            }
-            if(excel[0][j] == "BOOLEAN"){
-                for(let i = Sindex;i<excel.length;i++){
-                    if(!excel[i][j]){
-                        excel[i][j] = 0
-                    }else{
-                        if(excel[i][j] == 1){
-                            excel[i][j] = true;
-                        }else if(excel[i][j] == 0){
-                            excel[i][j] = false;
-                        }else{
-                            window.alert(`文件${filsArray[indexe]}中第${i+1}行${j+1}列布尔值填写有问题，请填写1或0！`);
-                            checkreturn = true
-                        }
-                    }
-                }
-            }
-            if(excel[0][j] == "BOOLEAN[]"){
-                for(let i = Sindex;i<excel.length;i++){
-                    if(!excel[i][j]){
-                        excel[i][j] = ""
-                    }else{
+        }
+        if(excel[0][j] == "BOOLEAN[]"){
+            for(let i = Sindex;i<excel.length;i++){
+                if(!excel[i][j] && excel[i][j] != 0){
+                    excel[i][j] = ""
+                }else{
+                    if(!!excel[i][j].toString().match(/\|/g)){
                         excel[i][j] = excel[i][j].split("\|");
                         excel[i][j].forEach((item,index)=>{
                             if(item == "1"){
@@ -275,102 +276,117 @@ var btnn = function(){
                                 checkreturn = true
                             }
                         })
-                    }
-                }
-            }
-            if(excel[0][j] == "BOOLEAN[][]"){
-                for(let i = Sindex;i<excel.length;i++){
-                    if(!excel[i][j]){
-                        excel[i][j] = ""
                     }else{
-                        excel[i][j] = excel[i][j].split("\||");
-                        excel[i][j].forEach((item,index)=>{
-                            excel[i][j][index] = item.split("\|");
-                            excel[i][j][index].forEach((items,indexs)=>{
-                                if(items == "1"){
-                                    excel[i][j][index][indexs] = true;
-                                }else if(items == "0"){
-                                    excel[i][j][index][indexs] = false;
-                                }else{
-                                    window.alert(`文件${filsArray[indexe]}中第${i+1}行${j+1}列布尔值填写有问题，请填写1或0！`);
-                                    checkreturn = true
-                                }
-                            })
-                        })
-                    }
-                }
-            }
-            if(excel[0][j] == "STRING"){
-                for(let i = Sindex;i<excel.length;i++){
-                    if(!excel[i][j]){
-                        excel[i][j] = ""
-                    }else{
-                        excel[i][j] = excel[i][j].toString();
-                    }
-                }
-            }
-            if(excel[0][j] == "INT[]" || excel[0][j] == "FLOAT[]"){
-                for(let i = Sindex;i<excel.length;i++){
-                    if(!excel[i][j]){
-                        excel[i][j] = ""
-                    }else{
-                        console.log(` 走了这里${!!excel[i][j].toString().match(/\|/g)}`)
-                        if(!!excel[i][j].toString().match(/\|/g)){
-                            excel[i][j] = excel[i][j].split("\|")
-                            excel[i][j].forEach((item,index)=>{
-                                excel[i][j][index] = Number(item);
-                            })
+                        let arr = [];
+                        if(excel[i][j] == 1){
+                            arr.push(true);
+                        }else if(excel[i][j] == 0){
+                            arr.push(false);
                         }else{
-                            excel[i][j] = Number(excel[i][j]);
+                            window.alert(`文件${filsArray[indexe]}中第${i+1}行${j+1}列布尔值填写有问题，请填写1或0！`);
+                            checkreturn = true
                         }
+                        excel[i][j] = arr;
                     }
                 }
             }
-            if(excel[0][j] == "STRING[]"){
-                for(let i = Sindex;i<excel.length;i++){
-                    if(!excel[i][j]){
-                        excel[i][j] = ""
-                    }else{
-                        if(!!excel[i][j].toString().match(/\|/g)){
-                            excel[i][j] = excel[i][j].replace(/\|/g,",");
-                            excel[i][j] = ""+excel[i][j]+"";
-                            excel[i][j] = excel[i][j].split(",")
-                        }else{
-                            excel[i][j] = excel[i][j].toString();
-                        }
-                    }
-                }
-            }
-            if(excel[0][j] == "INT[][]" || excel[0][j] == "FLOAT[][]"){
-                for(let i = Sindex;i<excel.length;i++){
-                    if(!excel[i][j]){
-                        excel[i][j] = ""
-                    }else{
-                        excel[i][j] = excel[i][j].split("\|\|");
-                        excel[i][j].forEach((item,index)=>{
-                            excel[i][j][index] = item.split("\|");
-                            excel[i][j][index].forEach((items,indexs)=>{
-                                excel[i][j][index][indexs] = Number(items)
-                            })
+        }
+        if(excel[0][j] == "BOOLEAN[][]"){
+            for(let i = Sindex;i<excel.length;i++){
+                if(!excel[i][j] && excel[i][j] != 0){
+                    excel[i][j] = ""
+                }else{
+                    excel[i][j] = excel[i][j].split("\||");
+                    excel[i][j].forEach((item,index)=>{
+                        excel[i][j][index] = item.split("\|");
+                        excel[i][j][index].forEach((items,indexs)=>{
+                            if(items == "1"){
+                                excel[i][j][index][indexs] = true;
+                            }else if(items == "0"){
+                                excel[i][j][index][indexs] = false;
+                            }else{
+                                window.alert(`文件${filsArray[indexe]}中第${i+1}行${j+1}列布尔值填写有问题，请填写1或0！`);
+                                checkreturn = true
+                            }
                         })
-                    }
+                    })
                 }
             }
-            if(excel[0][j] == "STRING[][]"){
-                for(let i = Sindex;i<excel.length;i++){
-                    if(!excel[i][j]){
-                        excel[i][j] = ""
-                    }else{
-                        excel[i][j] = excel[i][j].replace(/\|\|/g,",");
-                        excel[i][j] = excel[i][j].split(",");
+        }
+        if(excel[0][j] == "STRING"){
+            for(let i = Sindex;i<excel.length;i++){
+                if(!excel[i][j] && excel[i][j] != 0){
+                    excel[i][j] = ""
+                }else{
+                    excel[i][j] = excel[i][j].toString();
+                }
+            }
+        }
+        if(excel[0][j] == "INT[]" || excel[0][j] == "FLOAT[]"){
+            for(let i = Sindex;i<excel.length;i++){
+                if(!excel[i][j] && excel[i][j] != 0){
+                    excel[i][j] = ""
+                }else{
+                    if(!!excel[i][j].toString().match(/\|/g)){
+                        excel[i][j] = excel[i][j].split("\|")
                         excel[i][j].forEach((item,index)=>{
-                            excel[i][j][index] = item.replace(/\|/g,",").split(",");
+                            excel[i][j][index] = Number(item);
                         })
+                    }else{
+                        let arr = [];
+                        arr.push(Number(excel[i][j]));
+                        excel[i][j] = arr;
                     }
                 }
             }
-        }   
-    });
+        }
+        if(excel[0][j] == "STRING[]"){
+            for(let i = Sindex;i<excel.length;i++){
+                if(!excel[i][j]){
+                    excel[i][j] = ""
+                }else{
+                    if(!!excel[i][j].toString().match(/\|/g)){
+                        excel[i][j] = excel[i][j].replace(/\|/g,",");
+                        excel[i][j] = ""+excel[i][j]+"";
+                        excel[i][j] = excel[i][j].split(",")
+                    }else{
+                        let arr = [];
+                        arr.push(excel[i][j].toString());
+                        excel[i][j] = arr;
+                    }
+                }
+            }
+        }
+        if(excel[0][j] == "INT[][]" || excel[0][j] == "FLOAT[][]"){
+            for(let i = Sindex;i<excel.length;i++){
+                if(!excel[i][j]){
+                    excel[i][j] = ""
+                }else{
+                    excel[i][j] = excel[i][j].split("\|\|");
+                    excel[i][j].forEach((item,index)=>{
+                        excel[i][j][index] = item.split("\|");
+                        excel[i][j][index].forEach((items,indexs)=>{
+                            excel[i][j][index][indexs] = Number(items)
+                        })
+                    })
+                }
+            }
+        }
+        if(excel[0][j] == "STRING[][]"){
+            for(let i = Sindex;i<excel.length;i++){
+                if(!excel[i][j]){
+                    excel[i][j] = ""
+                }else{
+                    excel[i][j] = excel[i][j].replace(/\|\|/g,",");
+                    excel[i][j] = excel[i][j].split(",");
+                    excel[i][j].forEach((item,index)=>{
+                        excel[i][j][index] = item.replace(/\|/g,",").split(",");
+                    })
+                }
+            }
+        }
+    }   
+});
     //处理第四行空值
     excelArray.forEach((item,index)=>{
         let len = item[0].length;
@@ -602,39 +618,39 @@ var createLanguage = function(excel,filename){
     }  
 }
 
-/**检查数据类型是否正确 */
-var checklist = function(excelArray){
-    excelArray.forEach((excel,index)=>{
-        for(i=0;i<excel[0].length;i++){
-            switch(excel[0][i]){
-                case "INT" : check("int",i,excel,index) 
-                break;
-                case "STRING" : check("string",i,excel,index)
-                break;                  
-            }
-        }
-    })   
-}
+// /**检查数据类型是否正确 */
+// var checklist = function(excelArray){
+//     excelArray.forEach((excel,index)=>{
+//         for(i=0;i<excel[0].length;i++){
+//             switch(excel[0][i]){
+//                 case "INT" : check("int",i,excel,index) 
+//                 break;
+//                 case "STRING" : check("string",i,excel,index)
+//                 break;                  
+//             }
+//         }
+//     })   
+// }
 
 
-var check = function(method,index,excel,indexs){
-    if(method == "int"){
-        for(j = 4;j<excel.length;j++){ 
-            if((typeof excel[j][index]) == "number"){
-                if(excel[j][index]%1 != 0){
-                    console.log(indexs,j,index);
-                    window.alert(`文件：${fileArr[indexs]}第${j+2}行第${index+1}列数据格式不匹配！请修改后再转换`)
-                    isreturn = true
-                }
-            }
-        } 
-    }
-    if(method == "string"){
-        for(j = 4;j<excel.length;j++){ 
-            if((typeof excel[j][index]) != "string"){
-                window.alert(`文件：${fileArr[indexs]}第${j+2}行第${index+1}列数据格式不匹配！请修改后再转换`)
-                isreturn = true
-            } 
-        }
-    } 
-}
+// var check = function(method,index,excel,indexs){
+//     if(method == "int"){
+//         for(j = 4;j<excel.length;j++){ 
+//             if((typeof excel[j][index]) == "number"){
+//                 if(excel[j][index]%1 != 0){
+//                     console.log(indexs,j,index);
+//                     window.alert(`文件：${fileArr[indexs]}第${j+2}行第${index+1}列数据格式不匹配！请修改后再转换`)
+//                     isreturn = true
+//                 }
+//             }
+//         } 
+//     }
+//     if(method == "string"){
+//         for(j = 4;j<excel.length;j++){ 
+//             if((typeof excel[j][index]) != "string"){
+//                 window.alert(`文件：${fileArr[indexs]}第${j+2}行第${index+1}列数据格式不匹配！请修改后再转换`)
+//                 isreturn = true
+//             } 
+//         }
+//     } 
+// }

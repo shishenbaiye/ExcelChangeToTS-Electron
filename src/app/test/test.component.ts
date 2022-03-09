@@ -8,36 +8,23 @@ import { Component,OnInit } from "@angular/core";
 export class TestComponent implements OnInit {
     inputContent:string = '';
     configContent:string = 'none';
-    checkOne:boolean = false;
-    checkTwo:boolean = false;
+    labelPosition:'newone' |'newtwo'|'oldone' = 'newone';
     ngOnInit(): void {
         let result = clickCreateConfig();
-        this.inputContent = result;    
+        this.inputContent = result;   
+        createList(); 
     }
     public clickbtn(){
-        if(this.checkOne && this.checkTwo){
-            btnn();
-            btn();
-        }else{
-            if(this.checkOne){
-               btnn(); 
-            }
-            if(this.checkTwo){
-                btn();
-            }
-            if(!this.checkOne && !this.checkTwo){
-                window.alert("请选择生成方式！")
-            }
+        console.log(this.labelPosition);
+        switch(this.labelPosition){
+            case 'newone':btnn();break;
+            case 'newtwo':btnnn();break;
+            case 'oldone':btn();break;
+            default: window.alert("请选择生成方式！");break;
         }
     }
-
-    public selection(checkid:string,state:boolean){
-        if(checkid == "one"){
-            this.checkOne = state;
-        }
-        if(checkid == "two"){
-            this.checkTwo = state;
-        }  
+    private(str:string){
+        console.log(str);
     }
 
     public clickClose(){

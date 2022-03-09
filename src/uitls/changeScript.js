@@ -201,6 +201,17 @@ var Taskbar = function(){
     ipc.send("hide-win");
 }
 
+var createList = function(){
+    console.log(`开始创建列表`);
+    try {
+        let content = "[]";
+        let Path =  path.join(__dirname, '../../../../');
+        fs.writeFileSync(`${Path}Config\\tableList.json`,content);
+    } catch (error) { 
+
+    }
+}
+
 
 
 
