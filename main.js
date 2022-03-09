@@ -6,13 +6,13 @@
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  * @FilePath: \ExcelChangeToTS-Electron-main\main.js
  */
-const {app,BrowserWindow,Menu, dialog} = require('electron');
+const {app,BrowserWindow,Menu, dialog, globalShortcut} = require('electron');
 const ipc = require('electron').ipcMain;
 const path = require('path');
-
+var win = null;
 function CreatWindow(){
     // Menu.setApplicationMenu(null);
-    const win = new BrowserWindow({
+    win = new BrowserWindow({
         width: 800,
         height: 500,
         frame:false,
@@ -20,10 +20,9 @@ function CreatWindow(){
             nodeIntegration: true,
             enableRemoteModule: false, // turn off remot
             contextIsolation: false,
-            preload: [path.join(__dirname, 'src/uitls/changeScript.js'),path.join(__dirname, 'src/uitls/changeAll.js')]
+            preload: [path.join(__dirname, 'src/uitls/changeScript.js'),path.join(__dirname, 'src/uitls/changeAll.js'),path.join(__dirname, 'src/uitls/changeMuch.js')]
         }
     })
-    win.webContents.openDevTools();
     win.loadFile('dist/myapp/index.html');
     ipc.on('close-win',()=>{
         win.close();
@@ -34,7 +33,12 @@ function CreatWindow(){
     })
 }
 
-app.on('ready', CreatWindow);
+app.on('ready', ()=>{
+    CreatWindow();
+    globalShortcut.register('CommandOrControl+Alt+F10', ()=>{
+        win.webContents.openDevTools();
+    })
+});
 
 
 
