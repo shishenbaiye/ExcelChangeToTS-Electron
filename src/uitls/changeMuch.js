@@ -111,9 +111,9 @@ var btnnn = function(){
         isreturn = false;
         return
     }
-   
-    // console.log(excelArray[0]);
+    // console.log(excelArray);
     // return
+ 
     //属性类型描述数组
     excelArray.forEach((obj,index)=>{
         let object = "";
@@ -330,6 +330,13 @@ var btnnn = function(){
                         excel[i][j] = excel[i][j].toString();
                     }
                 }
+            }
+            if(excel[0][j] == "INT" || excel[0][j] == "FLOAT"){
+                for(let i = Sindex;i<excel.length;i++){
+                    if(!excel[i][j] && excel[i][j] != 0){
+                        excel[i][j] = 0
+                    }
+                } 
             }
             if(excel[0][j] == "INT[]" || excel[0][j] == "FLOAT[]"){
                 for(let i = Sindex;i<excel.length;i++){

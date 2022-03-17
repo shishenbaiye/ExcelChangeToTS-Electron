@@ -6,6 +6,7 @@ import { TestComponent } from './test/test.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material/material.module';
 
+import { HttpClientModule} from '@angular/common/http';
 @NgModule({
   declarations: [
     TestComponent
@@ -14,7 +15,8 @@ import { MaterialModule } from './material/material.module';
     BrowserModule,
     FormsModule,
     BrowserAnimationsModule,
-    MaterialModule
+    MaterialModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [TestComponent]
