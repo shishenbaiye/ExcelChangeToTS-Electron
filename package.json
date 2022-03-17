@@ -1,6 +1,6 @@
 {
   "name": "ExcelToTypeScript",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "main": "main.js",
   "author": "zebin.ge",
   "description": "a tool for excel change to typescript",

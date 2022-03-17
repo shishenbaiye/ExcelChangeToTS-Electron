@@ -306,7 +306,7 @@ var btnn = function(){
                                 excel[i][j][index][indexs] = false;
                             }else{
                                 window.alert(`文件${filsArray[indexe]}中第${i+1}行${j+1}列布尔值填写有问题，请填写1或0！`);
-                                checkreturn = true
+                                checkreturn = true;
                             }
                         })
                     })
@@ -316,16 +316,23 @@ var btnn = function(){
         if(excel[0][j] == "STRING"){
             for(let i = Sindex;i<excel.length;i++){
                 if(!excel[i][j] && excel[i][j] != 0){
-                    excel[i][j] = ""
+                    excel[i][j] = "";
                 }else{
                     excel[i][j] = excel[i][j].toString();
                 }
             }
         }
+        if(excel[0][j] == "INT" || excel[0][j] == "FLOAT"){
+            for(let i = Sindex;i<excel.length;i++){
+                if(!excel[i][j] && excel[i][j] != 0){
+                    excel[i][j] = 0;
+                }
+            } 
+        }
         if(excel[0][j] == "INT[]" || excel[0][j] == "FLOAT[]"){
             for(let i = Sindex;i<excel.length;i++){
                 if(!excel[i][j] && excel[i][j] != 0){
-                    excel[i][j] = ""
+                    excel[i][j] = "";
                 }else{
                     if(!!excel[i][j].toString().match(/\|/g)){
                         excel[i][j] = excel[i][j].split("\|")
