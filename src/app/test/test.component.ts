@@ -23,9 +23,6 @@ export class TestComponent implements OnInit {
             default: window.alert("请选择生成方式！");break;
         }
     }
-    private(str:string){
-        console.log(str);
-    }
 
     public clickClose(){
         Close();

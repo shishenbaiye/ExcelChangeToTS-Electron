@@ -525,9 +525,10 @@ var CreatConfigBase = function(){
     "\n\tprivate readonly ELEMENTARR:Array<T> = [];"+
     "\n\tprivate readonly ELEMENTMAP:Map<number, T>  = new Map<number, T>();"+
     "\n\tprivate readonly KEYMAP:Map<string, number> = new Map();"+
+    "\n\tprivate static languageIndex:number = 0"+
     "\n\tprivate static getLanguage:(key:string|number)=>string;"+
     "\n"+
-    "\n\tpublic constructor(excelData:Array<Array<any>>, languageIndex:number){"+
+    "\n\tpublic constructor(excelData:Array<Array<any>>){"+
     "\n\t\tlet headerLine:number = 2;//表头的行数"+
     "\n\t\tthis.ELEMENTARR = new Array(excelData.length - headerLine);"+
     "\n\t\t"+
@@ -541,10 +542,10 @@ var CreatConfigBase = function(){
     "\n\t\t\tif(tags.includes(ConfigBase.TAG_CHILDLANGUAGE)) continue;"+
     "\n\t\t\tlet jOffect:number = 0;//列偏移量"+
     "\n\t\t\tif(tags.includes(ConfigBase.TAG_MAINLANGUAGE)){"+
-    "\n\t\t\t\tlet index = j + languageIndex;"+
+    "\n\t\t\t\tlet index = j + ConfigBase.languageIndex;"+
     "\n\t\t\t\tlet targetTags:Array<string> = excelData[1][index].split('|');"+
     "\n\t\t\t\tif(index < column && targetTags.includes(ConfigBase.TAG_CHILDLANGUAGE)){"+
-    "\n\t\t\t\t\tjOffect = languageIndex;"+
+    "\n\t\t\t\t\tjOffect = ConfigBase.languageIndex;"+
     "\n\t\t\t\t}"+
     "\n\t\t\t}"+
     "\n\t\t\tlet hasTag_Key:boolean = tags.includes(ConfigBase.TAG_KEY);"+
@@ -567,9 +568,31 @@ var CreatConfigBase = function(){
     "\n\t\t}"+
     "\n\t}"+
     "\n\t//设置获取语言的方法"+
-    "\n\tpublic static setLanguageFun(getLanguageFun:(key:string|number)=>string){"+
+    "\n\tpublic static initLanguage(languageIndex:number, getLanguageFun:(key:string|number)=>string){"+
+    "\n\t\tConfigBase.languageIndex = languageIndex;"+
     "\n\t\tConfigBase.getLanguage = getLanguageFun;"+
+    "\n\t\tif(ConfigBase.languageIndex < 0){"+
+    "\n\t\t\tConfigBase.languageIndex = ConfigBase.getSystemLanguageIndex();"+
+    "\n\t\t}"+
     "\n\t}"+
+    "\n\t//获取系统语言索引"+
+    "\n\tprivate static getSystemLanguageIndex():number{"+
+    "\n\t\tlet language = Global.GetDefaultLocale().toString().toLowerCase();"+
+    "\n\t\tif (!!language.match(\"zh\")) {"+
+    "\n\t\t\treturn 0;"+
+    "\n\t\t}"+
+    "\n\t\tif (!!language.match(\"en\")) {"+
+    "\n\t\t\treturn 1;"+
+    "\n\t\t}"+
+    "\n\t\tif (!!language.match(\"ja\")) {"+
+    "\n\t\t\treturn 2;"+
+    "\n\t\t}"+
+    "\n\t\tif (!!language.match(\"de\")) {"+
+    "\n\t\t\treturn 3;"+
+    "\n\t\t}"+
+    "\n\t\treturn 0;"+
+    "\n\t}"+
+
     "\n\t/**根据id获取一个元素*/"+
     "\n\tpublic getElement(id:number|string): T {"+
     "\n\t\tlet ele = this.ELEMENTMAP.get(Number(id)) || this.ELEMENTMAP.get(this.KEYMAP.get(String(id)));"+
@@ -605,20 +628,18 @@ var CreatGameConfig = function(allfilename){
     })
     content += "\nexport class GameConfig{\n"+
     "\tprivate static configMap:Map<string, ConfigBase<IElementBase>> = new Map();"+
-    "\n\tprivate static languageIndex:number = 0;//语言索引"+
+    "\n\t/**\n\t* 多语言设置\n\t* @param languageIndex 语言索引(-1为系统默认语言)\n\t* @param getLanguageFun 根据key获取语言内容的方法\n\t*/"+
     "\n\tpublic static initLanguage(languageIndex:number, getLanguageFun:(key:string|number)=>string){"+
-    "\n\t\tthis.languageIndex = languageIndex;"+
-    "\n\t\tConfigBase.setLanguageFun(getLanguageFun)"+
+    "\n\t\tConfigBase.initLanguage(languageIndex, getLanguageFun)"+
     "\n\t}"+
-    "\n\tprivate static getConfig<T extends ConfigBase<IElementBase>>(ConfigClass:{new(languageIndex:number):T}):T{"+
+    "\n\tprivate static getConfig<T extends ConfigBase<IElementBase>>(ConfigClass: { new(): T }): T {"+
+    "\n\t\tif (!this.configMap.has(ConfigClass.name)) {"+
+    "\n\t\t\tthis.configMap.set(ConfigClass.name, new ConfigClass());"+
+    "\n\t\t}"+
     "\n\t\treturn this.configMap.get(ConfigClass.name) as T;"+
-    "\n\t}"+
-    "\n\tprivate static registerConfig<T extends ConfigBase<IElementBase>>(config:T){"+
-    "\n\t\tthis.configMap.set(config.constructor.name, config);"+   
-    "\n\t\treturn config;"+
-    "\n\t}"
+    "\n\t}";
     allfilename.forEach((filename)=>{
-        content += `\n\tpublic static get ${filename.name}():${filename.name}Config{ return this.getConfig(${filename.name}Config) || this.registerConfig(new ${filename.name}Config(this.languageIndex))};`
+        content += `\n\tpublic static get ${filename.name}():${filename.name}Config{ return this.getConfig(${filename.name}Config) };`
     })
     content += "\n}"
     fs.writeFileSync(`${outputDir}\\GameConfig.ts`,content);
@@ -652,7 +673,7 @@ var CreatTableFile = function(filsArray,arrayData,interfaceData,arrayLanguage){
         content += `\nconst EXCELDATA:Array<Array<any>> = ${arraydata[index]};\n`
         content += interfaceData[index];
         content += `\nexport class ${filsArray[index].replace(".xlsx","")}Config extends ConfigBase<I${filsArray[index].replace(".xlsx","")}Element>{\n`;
-        content += `\tconstructor(languageIndex:number){\n\t\tsuper(EXCELDATA, languageIndex);\n\t}\n`;
+        content += `\tconstructor(){\n\t\tsuper(EXCELDATA);\n\t}\n`;
         content += arrayLanguage[index];
         content += `\n}`
         fs.writeFileSync(`${outputDir}\\${filsArray[index].replace(".xlsx","")}.ts`,content);
